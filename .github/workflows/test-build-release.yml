@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [macos-latest] # [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout code
@@ -53,14 +53,10 @@ jobs:
           pip install bump-my-version build
 
       - name: Bump patch version
-        run: bump-my-version bump patch
-
-      - name: Commit version bump
         run: |
           git config user.name "${{ github.actor }}"
           git config user.email "${{ github.actor }}@users.noreply.github.com"
-          git commit -am "Bump version [skip ci]"
-          git tag v$(bump-my-version show current)
+          bump-my-version bump patch
 
       - name: Push changes and tag
         env:
