@@ -34,6 +34,8 @@ jobs:
 
   bump-and-build:
     name: Bump version and build package
+    permissions:
+      contents: write
     needs: test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
@@ -63,7 +65,7 @@ jobs:
           GH_TOKEN: ${{ secrets.SANDBOX_COMMIT_TOKEN }}
         run: |
           git push origin HEAD:main
-          git push origin v$(bump-my-version show current)
+          git push origin v$(bump-my-version show current_version)
 
       - name: Build package
         run: python -m build
