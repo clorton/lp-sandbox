@@ -34,7 +34,7 @@ class SEIR_ABM:
     """
 
     def __init__(self, pars: PropertySet = None, verbose=0.1):
-        sc.printcyan("Initializing simulation...")
+        sc.printcyan("Initializing PHASER simulation...")
 
         # Load default parameters and optionally override with user-specified ones
         self.pars = deepcopy(lp.default_pars)
