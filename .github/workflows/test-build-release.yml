@@ -1,0 +1,79 @@
+name: Test, Bump Version, and Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run tests on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .[dev]
+
+      - name: Run tests
+        run: |
+          pytest
+
+  bump-and-build:
+    name: Bump version and build package
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install bump-my-version and build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bump-my-version build
+
+      - name: Bump patch version
+        run: bump-my-version bump patch
+
+      - name: Commit version bump
+        run: |
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          git commit -am "Bump version [skip ci]"
+          git tag v$(bump-my-version show current)
+
+      - name: Push changes and tag
+        env:
+          GH_TOKEN: ${{ secrets.SANDBOX_COMMIT_TOKEN }}
+        run: |
+          git push origin HEAD:main
+          git push origin v$(bump-my-version show current)
+
+      - name: Build package
+        run: python -m build
+
+      - name: upload wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-wheels
+          path: dist/*
