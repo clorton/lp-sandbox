@@ -12,7 +12,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest] # [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest] # [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       - name: Checkout code
@@ -41,8 +41,22 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Get commit message
+        id: get_commit
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B | tr -d '\r' | sed ':a;N;$!ba;s/\n/ /g')
+          echo "Commit message: $COMMIT_MSG"
+          echo "msg=$COMMIT_MSG" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if 'no bump' is in commit message
+        if: contains(steps.get_commit.outputs.msg, 'no bump')
+        run: |
+          echo "Skipping version bump due to 'no bump' in commit message."
+          exit 0
 
       - name: Set up Python
         uses: actions/setup-python@v5

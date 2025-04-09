@@ -13,8 +13,17 @@ on:
           default: 'false'
 
 jobs:
+  approve:
+    name: Approve version bump
+    environment: restricted
+    runs-on: ubuntu-latest
+    steps:
+      - name: Request approval
+        run: echo "Requesting approval for version bump"
+
   test:
     name: Run tests on ${{ matrix.os }}
+    needs: approve
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -40,7 +49,6 @@ jobs:
 
   bump-and-build:
     name: Bump version and build package
-    environment: restricted
     permissions:
       contents: write
     needs: test
