@@ -68,3 +68,9 @@ NEW FEATURES
     - m (scalar) parameter on R0 random effects
 - Age-specific R0???
 - Get Hil & Kurt to add links to code in curation_scripts README
+
+----
+
+### Other
+
+- [X] gate patch version update on _absence_ of "no bump" in commit message.
