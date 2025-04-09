@@ -74,4 +74,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          echo "Creating release... v$(bump-my-version show current_version)"
           gh release upload "v$(bump-my-version show current_version)" dist/*
