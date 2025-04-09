@@ -74,3 +74,4 @@ NEW FEATURES
 ### Other
 
 - [X] gate patch version update on _absence_ of "no bump" in commit message.
+- [X] fix GitHub action YAML to work correctly.
