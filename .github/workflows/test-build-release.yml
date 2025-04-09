@@ -62,7 +62,7 @@ jobs:
 
       - name: Push changes and tag
         env:
-          GH_TOKEN: ${{ secrets.SANDBOX_COMMIT_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git push origin HEAD:main
           git push origin v$(bump-my-version show current_version)
@@ -72,7 +72,6 @@ jobs:
 
       - name: Upload artifacts to release
         env:
-          GITHUB_TOKEN: ${{ secrets.SANDBOX_COMMIT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tag_name=v$(bump-my-version show current_version)
-          gh release upload "$tag_name" dist/*
+          gh release upload "v$(bump-my-version show current_version)" dist/*
