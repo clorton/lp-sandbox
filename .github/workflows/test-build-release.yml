@@ -70,40 +70,9 @@ jobs:
       - name: Build package
         run: python -m build
 
-      - name: upload wheel
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist-wheels
-          path: dist/*
-
-  build_wheels:
-    name: Build wheels on ${{ matrix.os }}
-    needs: bump-and-build
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-13, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-
-      # Used to host cibuildwheel
-      - uses: actions/setup-python@v5
-
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.23.2
-
-      - name: Build wheels
+      - name: Upload artifacts to release
         env:
-          CIBW_ARCHS_MACOS: "x86_64 arm64"
-          CIBW_ARCHS_LINUX: "x86_64"
-          CIBW_ARCHS_WINDOWS: "AMD64"
-          CIBW_TEST_REQUIRES: pytest
-          CIBW_TEST_COMMAND: "pytest {project}/tests"
-          CIBW_SKIP: "pp* *-musllinux*"
-        run: python -m cibuildwheel --output-dir wheelhouse
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: cibw-wheels-${{ matrix.os }}-${{ strategy.job-index }}
-          path: ./wheelhouse/*.whl
+          GITHUB_TOKEN: ${{ secrets.SANDBOX_COMMIT_TOKEN }}
+        run: |
+          tag_name=v$(bump-my-version show current_version)
+          gh release upload "$tag_name" dist/*
