@@ -1,4 +1,4 @@
-# laser_polio
+# laser-polio
 This is a spatial polio transmission model built on the LASER framework.
 
 |||
